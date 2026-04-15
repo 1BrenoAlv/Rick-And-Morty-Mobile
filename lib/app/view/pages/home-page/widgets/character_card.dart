@@ -18,7 +18,12 @@ class CharacterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 2,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ClipRRect(
             child: AspectRatio(
@@ -27,10 +32,19 @@ class CharacterCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsetsGeometry.all(20),
+            padding: EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(character.name),
+                Text(
+                  character.name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 SizedBox(height: 4),
                 Row(
                   children: [
@@ -39,8 +53,15 @@ class CharacterCard extends StatelessWidget {
                       size: 10,
                       color: _statusColor(character.status),
                     ),
-                    SizedBox(height: 4),
-                    Text(character.species),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${character.status} - ${character.species}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
                   ],
                 ),
               ],
