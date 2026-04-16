@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rick_and_morty_mobile/app/view/pages/home-page/widgets/character_card.dart';
 import 'package:rick_and_morty_mobile/app/view/pages/home-page/widgets/drawer_home.dart';
 import 'package:rick_and_morty_mobile/app/viewmodels/character_viewmodel.dart';
@@ -16,7 +17,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _viewModel.fetchCharacters();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CharacterViewmodel>().fetchCharacters();
+    });
   }
 
   @override
@@ -35,7 +38,7 @@ class _HomePageState extends State<HomePage> {
                 width: logoSize,
                 height: logoSize,
                 child: ClipRRect(
-                  borderRadius: BorderRadiusGeometry.circular(10),
+                  borderRadius: BorderRadius.circular(10),
                   child: Image.asset('assets/logo.png', fit: BoxFit.cover),
                 ),
               ),
@@ -62,32 +65,69 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       drawer: Drawer(width: size.width * 0.80, child: DrawerHome()),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: AnimatedBuilder(
-          animation: _viewModel,
-          builder: (context, child) {
-            if (_viewModel.isLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
-            if (_viewModel.error != null) {
-              return Center(
-                child: Text('Erro', style: TextStyle(color: Colors.red)),
-              );
-            }
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.68,
+      body: Consumer<CharacterViewmodel>(
+        builder: (context, viewModel, child) {
+          return Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: AnimatedBuilder(
+                    animation: viewModel,
+                    builder: (context, child) {
+                      if (viewModel.isLoading) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (viewModel.error != null) {
+                        return Center(
+                          child: Text(
+                            'Erro',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        );
+                      }
+                      return GridView.builder(
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 200,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.68,
+                        ),
+                        itemCount: viewModel.characters.length,
+                        itemBuilder: (context, index) {
+                          return CharacterCard(
+                            character: viewModel.characters[index],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
               ),
-              itemCount: _viewModel.characters.length,
-              itemBuilder: (context, index) {
-                return CharacterCard(character: _viewModel.characters[index]);
-              },
-            );
-          },
-        ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed:
+                          (viewModel.isLoading || viewModel.currentPage == 1)
+                          ? null
+                          : () => viewModel.previousPage(),
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    Text('Página ${viewModel.currentPage} de 45'),
+                    IconButton(
+                      onPressed: viewModel.isLoading
+                          ? null
+                          : () => viewModel.nextPage(),
+                      icon: const Icon(Icons.arrow_forward),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -28,7 +28,24 @@ class CharacterCard extends StatelessWidget {
           ClipRRect(
             child: AspectRatio(
               aspectRatio: 1,
-              child: Image.network(character.image, fit: BoxFit.cover),
+              child: Image.network(
+                character.image,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.wifi_off, color: Colors.grey, size: 40),
+                        Text(
+                          'Sem imagem',
+                          style: TextStyle(color: Colors.grey, fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
           Padding(
