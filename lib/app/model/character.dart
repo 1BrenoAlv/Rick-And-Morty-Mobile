@@ -23,3 +23,19 @@ class Character {
     );
   }
 }
+
+class CharacterResponse {
+  final List<Character> characters;
+  final int totalPages;
+  final int totalCount;
+  final String? nextPage;
+  final String? prevPage;
+
+  CharacterResponse({
+    required this.characters,
+    required this.totalPages,
+    required this.totalCount,
+    this.nextPage,
+    this.prevPage,
+  });
+}

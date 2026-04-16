@@ -72,35 +72,7 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: AnimatedBuilder(
-                    animation: viewModel,
-                    builder: (context, child) {
-                      if (viewModel.isLoading) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      if (viewModel.error != null) {
-                        return Center(
-                          child: Text(
-                            'Erro',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        );
-                      }
-                      return GridView.builder(
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 200,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.68,
-                        ),
-                        itemCount: viewModel.characters.length,
-                        itemBuilder: (context, index) {
-                          return CharacterCard(
-                            character: viewModel.characters[index],
-                          );
-                        },
-                      );
-                    },
-                  ),
+                  child: _buildBody(viewModel),
                 ),
               ),
               Padding(
@@ -110,14 +82,17 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     IconButton(
                       onPressed:
-                          (viewModel.isLoading || viewModel.currentPage == 1)
+                          (viewModel.isLoading || viewModel.prevBtn == null)
                           ? null
                           : () => viewModel.previousPage(),
                       icon: const Icon(Icons.arrow_back),
                     ),
-                    Text('Página ${viewModel.currentPage} de 45'),
+                    Text(
+                      'Página ${viewModel.currentPage} de ${viewModel.pageTotal ?? ''} ',
+                    ),
                     IconButton(
-                      onPressed: viewModel.isLoading
+                      onPressed:
+                          (viewModel.isLoading || viewModel.nextBtn == null)
                           ? null
                           : () => viewModel.nextPage(),
                       icon: const Icon(Icons.arrow_forward),
@@ -129,6 +104,32 @@ class _HomePageState extends State<HomePage> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildBody(CharacterViewmodel viewModel) {
+    if (viewModel.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (viewModel.error != null) {
+      return Center(
+        child: Text(
+          viewModel.error!,
+          style: const TextStyle(color: Colors.red, fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.68,
+      ),
+      itemCount: viewModel.characters.length,
+      itemBuilder: (context, index) {
+        return CharacterCard(character: viewModel.characters[index]);
+      },
     );
   }
 }
