@@ -63,7 +63,6 @@ class _DrawerHomeState extends State<DrawerHome> {
             controller: searchController,
             keyboardType: TextInputType.text,
             keyboardAppearance: Brightness.dark,
-            
           ),
           SizedBox(height: 8),
           Text('Filtros'),
@@ -96,6 +95,9 @@ class _DrawerHomeState extends State<DrawerHome> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF55cc44),
+              ),
               onPressed: () {
                 if (mounted) {
                   Navigator.pop(context);
