@@ -12,7 +12,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final CharacterViewmodel _viewModel = CharacterViewmodel();
 
   @override
   void initState() {

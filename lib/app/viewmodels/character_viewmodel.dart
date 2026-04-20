@@ -9,7 +9,6 @@ class CharacterViewmodel extends ChangeNotifier {
   bool isLoading = false;
   String? error;
   int currentPage = 1;
-  int _lastPage = 1;
   String? currentSearchName;
   String? currentStatus;
   String? currentSpecies;
@@ -37,7 +36,6 @@ class CharacterViewmodel extends ChangeNotifier {
         nextBtn = response.nextPage;
         prevBtn = response.prevPage;
         pageTotal = response.totalPages;
-        _lastPage = currentPage;
         success = true;
         error = null;
       } catch (e) {
@@ -54,6 +52,31 @@ class CharacterViewmodel extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  void filterAplly({
+    required String search,
+    required String status,
+    required String species,
+    required String gender,
+  }) {
+    currentSearchName = search.isEmpty ? null : search;
+    currentStatus = status == 'Todos os status' ? null : status;
+    currentSpecies = species == 'Todas as espécies' ? null : species;
+    currentGender = gender == 'Todos os gêneros' ? null : gender;
+    currentPage = 1;
+    fetchCharacters();
+  }
+
+  void clearFilter() {
+    currentSearchName = null;
+    currentStatus = null;
+    currentSpecies = null;
+    currentGender = null;
+
+    currentPage = 1;
+
+    fetchCharacters();
   }
 
   void nextPage() {
