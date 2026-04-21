@@ -1,0 +1,79 @@
+/// Traduções centralizadas EN → PT para os valores da API Rick and Morty.
+class AppTranslations {
+  AppTranslations._();
+
+  // ─── Status ───────────────────────────────────────────────
+  static const Map<String, String> _status = {
+    'alive': 'Vivo',
+    'dead': 'Morto',
+    'unknown': 'Desconhecido',
+  };
+
+  static String status(String value) =>
+      _status[value.toLowerCase()] ?? value;
+
+  // ─── Espécies ─────────────────────────────────────────────
+  static const Map<String, String> _species = {
+    'human': 'Humano',
+    'alien': 'Alienígena',
+    'humanoid': 'Humanóide',
+    'poopybutthole': 'Poopybutthole',
+    'mythological creature': 'Criatura Mitológica',
+    'mythological': 'Mitológico',
+    'animal': 'Animal',
+    'robot': 'Robô',
+    'cronenberg': 'Cronenberg',
+    'disease': 'Doença',
+    'planet': 'Planeta',
+    'unknown': 'Desconhecida',
+  };
+
+  static String species(String value) =>
+      _species[value.toLowerCase()] ?? value;
+
+  // ─── Gênero ───────────────────────────────────────────────
+  static const Map<String, String> _gender = {
+    'male': 'Masculino',
+    'female': 'Feminino',
+    'genderless': 'Sem gênero',
+    'unknown': 'Desconhecido',
+  };
+
+  static String gender(String value) =>
+      _gender[value.toLowerCase()] ?? value;
+
+  // ─── Filtros (Labels PT → Valores EN para a API) ──────────
+
+  /// Opções de status para dropdown (label PT : valor EN para API)
+  static const Map<String, String?> statusFilters = {
+    'Todos os status': null,
+    'Vivo': 'Alive',
+    'Morto': 'Dead',
+    'Desconhecido': 'Unknown',
+  };
+
+  /// Opções de espécie para dropdown
+  static const Map<String, String?> speciesFilters = {
+    'Todas as espécies': null,
+    'Humano': 'Human',
+    'Alienígena': 'Alien',
+    'Humanóide': 'Humanoid',
+    'Robô': 'Robot',
+    'Criatura Mitológica': 'Mythological Creature',
+    'Animal': 'Animal',
+    'Cronenberg': 'Cronenberg',
+    'Doença': 'Disease',
+    'Planeta': 'Planet',
+    'Poopybutthole': 'Poopybutthole',
+    'Desconhecida': 'Unknown',
+  };
+
+  /// Opções de gênero para dropdown
+  static const Map<String, String?> genderFilters = {
+    'Todos os gêneros': null,
+    'Masculino': 'Male',
+    'Feminino': 'Female',
+    'Sem gênero': 'Genderless',
+    'Desconhecido': 'Unknown',
+  };
+}

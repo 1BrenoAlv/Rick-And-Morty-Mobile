@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rick_and_morty_mobile/app/config/colors.dart';
 import 'package:rick_and_morty_mobile/app/view/pages/home-page/widgets/character_card.dart';
 import 'package:rick_and_morty_mobile/app/view/pages/home-page/widgets/drawer_home.dart';
 import 'package:rick_and_morty_mobile/app/viewmodels/character_viewmodel.dart';
@@ -37,7 +38,7 @@ class _HomePageState extends State<HomePage> {
                 width: logoSize,
                 height: logoSize,
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppColors.borderRadiusCard,
                   child: Image.asset('assets/logo.png', fit: BoxFit.cover),
                 ),
               ),
@@ -45,7 +46,11 @@ class _HomePageState extends State<HomePage> {
               Flexible(
                 child: Text(
                   'Rick And Morty Explorer',
-                  style: TextStyle(fontSize: size.width * 0.052),
+                  style: TextStyle(
+                    fontSize: size.width * 0.052,
+                    color: AppColors.bgColor,
+                    fontWeight: FontWeight.w600,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -58,57 +63,87 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.fromLTRB(0, 10, 10, 10),
             child: IconButton(
               onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-              icon: Icon(Icons.menu),
+              icon: const Icon(Icons.menu, color: AppColors.bgColor),
             ),
           ),
         ],
       ),
       drawer: Drawer(width: size.width * 0.80, child: DrawerHome()),
-      body: Consumer<CharacterViewmodel>(
-        builder: (context, viewModel, child) {
-          return Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _buildBody(viewModel),
+      body: Container(
+        color: AppColors.bgMain,
+        child: Consumer<CharacterViewmodel>(
+          builder: (context, viewModel, child) {
+            return Column(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: _buildBody(viewModel),
+                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed:
-                          (viewModel.isLoading || viewModel.prevBtn == null)
-                          ? null
-                          : () => viewModel.previousPage(),
-                      icon: const Icon(Icons.arrow_back),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      top: BorderSide(color: AppColors.colorBorder, width: 1),
                     ),
-                    Text(
-                      'Página ${viewModel.currentPage} de ${viewModel.pageTotal ?? ''} ',
-                    ),
-                    IconButton(
-                      onPressed:
-                          (viewModel.isLoading || viewModel.nextBtn == null)
-                          ? null
-                          : () => viewModel.nextPage(),
-                      icon: const Icon(Icons.arrow_forward),
-                    ),
-                  ],
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 6.0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed:
+                            (viewModel.isLoading || viewModel.prevBtn == null)
+                            ? null
+                            : () => viewModel.previousPage(),
+                        icon: Icon(
+                          Icons.arrow_back,
+                          color:
+                              (viewModel.isLoading || viewModel.prevBtn == null)
+                              ? AppColors.colorBorder
+                              : AppColors.primaryColor,
+                        ),
+                      ),
+                      Text(
+                        'Página ${viewModel.currentPage} de ${viewModel.pageTotal ?? ''} ',
+                        style: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed:
+                            (viewModel.isLoading || viewModel.nextBtn == null)
+                            ? null
+                            : () => viewModel.nextPage(),
+                        icon: Icon(
+                          Icons.arrow_forward,
+                          color:
+                              (viewModel.isLoading || viewModel.nextBtn == null)
+                              ? AppColors.colorBorder
+                              : AppColors.primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget _buildBody(CharacterViewmodel viewModel) {
     if (viewModel.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.bgAside),
+      );
     }
     if (viewModel.error != null) {
       return Center(
@@ -120,7 +155,7 @@ class _HomePageState extends State<HomePage> {
       );
     }
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 200,
         mainAxisSpacing: 12,
         childAspectRatio: 0.68,
