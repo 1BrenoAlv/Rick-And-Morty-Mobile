@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final logoSize = size.width * 0.13;
+    final logoSize = (size.width * 0.13).clamp(40.0, 65.0);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   'Rick And Morty Explorer',
                   style: TextStyle(
-                    fontSize: size.width * 0.052,
+                    fontSize: (size.width * 0.052).clamp(18.0, 24.0),
                     color: AppColors.bgColor,
                     fontWeight: FontWeight.w600,
                   ),
@@ -68,14 +68,119 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: Drawer(width: size.width * 0.80, child: DrawerHome()),
+      drawer: Drawer(
+        width: (size.width * 0.80).clamp(250.0, 360.0),
+        child: const DrawerHome(),
+      ),
       body: Container(
         color: AppColors.bgMain,
         child: Consumer<CharacterViewmodel>(
           builder: (context, viewModel, child) {
             if (viewModel.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(color: AppColors.bgAside),
+              );
             }
+
+            if (viewModel.error != null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.wifi_off_rounded,
+                        size: 80,
+                        color: AppColors.colorBorder,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        viewModel.error!,
+                        style: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.bgAside,
+                          foregroundColor: AppColors.bgColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: AppColors.borderRadiusCard,
+                          ),
+                        ),
+                        onPressed: () => viewModel.fetchCharacters(),
+                        icon: const Icon(Icons.refresh),
+                        label: const Text(
+                          'Tentar Novamente',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            if (viewModel.isFilterLoading && viewModel.characters.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.search_off_rounded,
+                        size: 80,
+                        color: AppColors.colorBorder,
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Nenhum personagem encontrado com esses filtros.',
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primaryColor,
+                          side: const BorderSide(
+                            color: AppColors.primaryColor,
+                            width: 2,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: AppColors.borderRadiusCard,
+                          ),
+                        ),
+                        onPressed: () => viewModel.clearFilter(),
+                        icon: const Icon(Icons.filter_alt_off),
+                        label: const Text(
+                          'Limpar Filtros',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
             return Column(
               children: [
                 Expanded(
@@ -143,29 +248,30 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody(CharacterViewmodel viewModel) {
-    if (viewModel.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.bgAside),
-      );
-    }
-    if (viewModel.error != null) {
-      return Center(
-        child: Text(
-          viewModel.error!,
-          style: const TextStyle(color: Colors.red, fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 200,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.68,
-      ),
-      itemCount: viewModel.characters.length,
-      itemBuilder: (context, index) {
-        return CharacterCard(character: viewModel.characters[index]);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width = constraints.maxWidth;
+        int crossAxisCount = (width / 180).floor();
+        if (crossAxisCount < 2) crossAxisCount = 2;
+
+        final double totalSpacing = (crossAxisCount - 1) * 12.0;
+        final double itemWidth = (width - totalSpacing) / crossAxisCount;
+        
+        final double itemHeight = itemWidth + 84.0;
+        final double aspectRatio = itemWidth / itemHeight;
+
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: aspectRatio,
+          ),
+          itemCount: viewModel.characters.length,
+          itemBuilder: (context, index) {
+            return CharacterCard(character: viewModel.characters[index]);
+          },
+        );
       },
     );
   }

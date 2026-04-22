@@ -7,6 +7,7 @@ class CharacterViewmodel extends ChangeNotifier {
 
   List<Character> characters = [];
   bool isLoading = false;
+  bool isFilterLoading = false;
   String? error;
   int currentPage = 1;
   String? currentSearchName;
@@ -33,18 +34,27 @@ class CharacterViewmodel extends ChangeNotifier {
           genderCharacter: currentGender,
         );
         characters = response.characters;
-        nextBtn = response.nextPage;
-        prevBtn = response.prevPage;
-        pageTotal = response.totalPages;
-        success = true;
-        error = null;
+        if (characters != []) {
+          nextBtn = response.nextPage;
+          prevBtn = response.prevPage;
+          pageTotal = response.totalPages;
+          success = true;
+          error = null;
+        }
+        isFilterLoading = true;
       } catch (e) {
         debugPrint('Tentativa de carregar página: ${attempt + 1}');
         attempt++;
         if (e.toString().contains('429')) {
           await Future.delayed(const Duration(milliseconds: 2000));
+        } else if (e.toString().contains('Erro de conexão')) {
+          error = 'Sem conexão com a internet. Verifique sua rede.';
+          break;
+        } else if (e.toString().contains('Erro na API')) {
+          error = 'Serviço temporariamente indisponível. Tente novamente mais tarde.';
+          break;
         } else {
-          error = 'Falha ao carregar. Verifique a internet.';
+          error = 'Falha ao carregar os dados. Tente novamente.';
           break;
         }
       } finally {

@@ -34,7 +34,6 @@ class ModalCharacter {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Imagem do personagem
                 AspectRatio(
                   aspectRatio: 1,
                   child: Image.network(
@@ -55,13 +54,11 @@ class ModalCharacter {
                   ),
                 ),
 
-                // Conteúdo
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Nome
                       Text(
                         character.name,
                         style: const TextStyle(
@@ -72,7 +69,6 @@ class ModalCharacter {
                       ),
                       const SizedBox(height: 8),
 
-                      // Status badge + Espécie - Gênero
                       Row(
                         children: [
                           Container(
@@ -110,29 +106,24 @@ class ModalCharacter {
                       ),
                       const SizedBox(height: 16),
 
-                      // Divider
                       Divider(
                         color: AppColors.primaryColor.withValues(alpha: 0.1),
                         height: 1,
                       ),
                       const SizedBox(height: 12),
 
-                      // Origem
                       _buildInfoRow('Origem', character.origin),
                       const SizedBox(height: 10),
 
-                      // Localização
                       _buildInfoRow('Localização', character.location),
                       const SizedBox(height: 10),
 
-                      // Episódios
                       _buildInfoRow(
                         'Episódios',
                         character.episodeCount.toString(),
                       ),
                       const SizedBox(height: 20),
 
-                      // Botão Fechar
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(

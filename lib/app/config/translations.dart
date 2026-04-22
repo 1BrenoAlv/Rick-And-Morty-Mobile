@@ -1,4 +1,3 @@
-/// Traduções centralizadas EN → PT para os valores da API Rick and Morty.
 class AppTranslations {
   AppTranslations._();
 
@@ -39,7 +38,6 @@ class AppTranslations {
   static String gender(String value) =>
       _gender[value.toLowerCase()] ?? value;
 
-  /// Opções de status para dropdown (label PT : valor EN para API)
   static const Map<String, String?> statusFilters = {
     'Todos os status': null,
     'Vivo': 'Alive',
@@ -47,7 +45,6 @@ class AppTranslations {
     'Desconhecido': 'Unknown',
   };
 
-  /// Opções de espécie para dropdown
   static const Map<String, String?> speciesFilters = {
     'Todas as espécies': null,
     'Humano': 'Human',
@@ -63,7 +60,6 @@ class AppTranslations {
     'Desconhecida': 'Unknown',
   };
 
-  /// Opções de gênero para dropdown
   static const Map<String, String?> genderFilters = {
     'Todos os gêneros': null,
     'Masculino': 'Male',

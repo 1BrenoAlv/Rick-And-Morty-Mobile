@@ -55,11 +55,12 @@ class CharacterService {
           prevPage: null,
         );
       } else {
-        throw Exception(
-          'Erro ao buscar personagens. Status: ${response.statusCode}',
-        );
+        throw Exception('Erro na API. Código: ${response.statusCode}');
       }
     } catch (e) {
+      if (e.toString().contains('Erro na API')) {
+        rethrow;
+      }
       throw Exception('Erro de conexão: $e');
     }
   }
