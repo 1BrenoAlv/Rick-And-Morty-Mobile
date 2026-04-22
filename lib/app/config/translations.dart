@@ -2,7 +2,6 @@
 class AppTranslations {
   AppTranslations._();
 
-  // ─── Status ───────────────────────────────────────────────
   static const Map<String, String> _status = {
     'alive': 'Vivo',
     'dead': 'Morto',
@@ -12,7 +11,6 @@ class AppTranslations {
   static String status(String value) =>
       _status[value.toLowerCase()] ?? value;
 
-  // ─── Espécies ─────────────────────────────────────────────
   static const Map<String, String> _species = {
     'human': 'Humano',
     'alien': 'Alienígena',
@@ -31,7 +29,6 @@ class AppTranslations {
   static String species(String value) =>
       _species[value.toLowerCase()] ?? value;
 
-  // ─── Gênero ───────────────────────────────────────────────
   static const Map<String, String> _gender = {
     'male': 'Masculino',
     'female': 'Feminino',
@@ -41,8 +38,6 @@ class AppTranslations {
 
   static String gender(String value) =>
       _gender[value.toLowerCase()] ?? value;
-
-  // ─── Filtros (Labels PT → Valores EN para a API) ──────────
 
   /// Opções de status para dropdown (label PT : valor EN para API)
   static const Map<String, String?> statusFilters = {

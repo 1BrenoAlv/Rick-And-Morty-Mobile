@@ -56,9 +56,9 @@ class CharacterViewmodel extends ChangeNotifier {
 
   void filterAplly({
     required String search,
-    required String status,
-    required String species,
-    required String gender,
+    String? status,
+    String? species,
+    String? gender,
   }) {
     currentSearchName = search.isEmpty ? null : search;
     currentStatus = status == 'Todos os status' ? null : status;

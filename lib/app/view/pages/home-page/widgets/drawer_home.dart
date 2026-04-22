@@ -28,10 +28,7 @@ class _DrawerHomeState extends State<DrawerHome> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.bgColor,
-        border: Border.all(
-          color: AppColors.colorBorder,
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.colorBorder, width: 1),
         borderRadius: AppColors.borderRadiusCard,
       ),
       child: DropdownButtonHideUnderline(
@@ -39,10 +36,7 @@ class _DrawerHomeState extends State<DrawerHome> {
           isExpanded: true,
           itemHeight: 50,
           value: currentValue,
-          icon: const Icon(
-            Icons.keyboard_arrow_down,
-            color: AppColors.bgColor,
-          ),
+          icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.bgColor),
           iconSize: 24,
           dropdownColor: AppColors.bgColor,
           elevation: 4,
@@ -94,9 +88,7 @@ class _DrawerHomeState extends State<DrawerHome> {
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: AppColors.borderRadiusCard,
-                  borderSide: const BorderSide(
-                    color: AppColors.colorBorder,
-                  ),
+                  borderSide: const BorderSide(color: AppColors.colorBorder),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: AppColors.borderRadiusCard,
@@ -157,11 +149,17 @@ class _DrawerHomeState extends State<DrawerHome> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () {
+                  final String? statusInIngles =
+                      AppTranslations.statusFilters[selectedStatus];
+                  final String? speciesInIngles =
+                      AppTranslations.speciesFilters[selectedSpecies];
+                  final String? genderInIngles =
+                      AppTranslations.genderFilters[selectedGender];
                   context.read<CharacterViewmodel>().filterAplly(
                     search: searchController.text,
-                    status: selectedStatus,
-                    species: selectedSpecies,
-                    gender: selectedGender,
+                    status: statusInIngles,
+                    species: speciesInIngles,
+                    gender: genderInIngles,
                   );
                   if (mounted) {
                     Navigator.pop(context);

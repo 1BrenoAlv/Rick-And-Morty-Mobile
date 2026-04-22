@@ -73,6 +73,9 @@ class _HomePageState extends State<HomePage> {
         color: AppColors.bgMain,
         child: Consumer<CharacterViewmodel>(
           builder: (context, viewModel, child) {
+            if (viewModel.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
             return Column(
               children: [
                 Expanded(
