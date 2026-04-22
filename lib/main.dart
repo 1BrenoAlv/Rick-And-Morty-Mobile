@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_mobile/app/view/pages/home-page/home_page.dart';
+import 'package:rick_and_morty_mobile/app/view/pages/splash/splash_page.dart';
 import './app/config/provider_config.dart';
 import './app/config/colors.dart';
 
@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
           fillColor: Colors.white,
         ),
       ),
-      home: HomePage(),
+      home: const SplashPage(),
     );
   }
 }
