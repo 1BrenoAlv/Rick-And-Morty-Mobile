@@ -72,176 +72,182 @@ class _HomePageState extends State<HomePage> {
         width: (size.width * 0.80).clamp(250.0, 360.0),
         child: const DrawerHome(),
       ),
-      body: Container(
-        color: AppColors.bgMain,
-        child: Consumer<CharacterViewmodel>(
-          builder: (context, viewModel, child) {
-            if (viewModel.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.bgAside),
-              );
-            }
+      body: RefreshIndicator.adaptive(
+        onRefresh: () => context.read<CharacterViewmodel>().fetchCharacters(),
+        child: Container(
+          color: AppColors.bgMain,
+          child: Consumer<CharacterViewmodel>(
+            builder: (context, viewModel, child) {
+              if (viewModel.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(color: AppColors.bgAside),
+                );
+              }
 
-            if (viewModel.error != null) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.wifi_off_rounded,
-                        size: 80,
-                        color: AppColors.colorBorder,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        viewModel.error!,
-                        style: const TextStyle(
-                          color: AppColors.primaryColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.bgAside,
-                          foregroundColor: AppColors.bgColor,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppColors.borderRadiusCard,
-                          ),
-                        ),
-                        onPressed: () => viewModel.fetchCharacters(),
-                        icon: const Icon(Icons.refresh),
-                        label: const Text(
-                          'Tentar Novamente',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            if (viewModel.isFilterLoading && viewModel.characters.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.search_off_rounded,
-                        size: 80,
-                        color: AppColors.colorBorder,
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Nenhum personagem encontrado com esses filtros.',
-                        style: TextStyle(
-                          color: AppColors.primaryColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primaryColor,
-                          side: const BorderSide(
-                            color: AppColors.primaryColor,
-                            width: 2,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppColors.borderRadiusCard,
-                          ),
-                        ),
-                        onPressed: () => viewModel.clearFilter(),
-                        icon: const Icon(Icons.filter_alt_off),
-                        label: const Text(
-                          'Limpar Filtros',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            return Column(
-              children: [
-                Expanded(
+              if (viewModel.error != null) {
+                return Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: _buildBody(viewModel),
-                  ),
-                ),
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      top: BorderSide(color: AppColors.colorBorder, width: 1),
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.wifi_off_rounded,
+                          size: 80,
+                          color: AppColors.colorBorder,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          viewModel.error!,
+                          style: const TextStyle(
+                            color: AppColors.primaryColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.bgAside,
+                            foregroundColor: AppColors.bgColor,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: AppColors.borderRadiusCard,
+                            ),
+                          ),
+                          onPressed: () => viewModel.fetchCharacters(),
+                          icon: const Icon(Icons.refresh),
+                          label: const Text(
+                            'Tentar Novamente',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 6.0,
+                );
+              }
+
+              if (viewModel.isFilterLoading && viewModel.characters.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.search_off_rounded,
+                          size: 80,
+                          color: AppColors.colorBorder,
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Nenhum personagem encontrado com esses filtros.',
+                          style: TextStyle(
+                            color: AppColors.primaryColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24),
+                        OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primaryColor,
+                            side: const BorderSide(
+                              color: AppColors.primaryColor,
+                              width: 2,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: AppColors.borderRadiusCard,
+                            ),
+                          ),
+                          onPressed: () => viewModel.clearFilter(),
+                          icon: const Icon(Icons.filter_alt_off),
+                          label: const Text(
+                            'Limpar Filtros',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed:
-                            (viewModel.isLoading || viewModel.prevBtn == null)
-                            ? null
-                            : () => viewModel.previousPage(),
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color:
+                );
+              }
+
+              return Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: _buildBody(viewModel),
+                    ),
+                  ),
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        top: BorderSide(color: AppColors.colorBorder, width: 1),
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 6.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed:
                               (viewModel.isLoading || viewModel.prevBtn == null)
-                              ? AppColors.colorBorder
-                              : AppColors.primaryColor,
+                              ? null
+                              : () => viewModel.previousPage(),
+                          icon: Icon(
+                            Icons.arrow_back,
+                            color:
+                                (viewModel.isLoading ||
+                                    viewModel.prevBtn == null)
+                                ? AppColors.colorBorder
+                                : AppColors.primaryColor,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Página ${viewModel.currentPage} de ${viewModel.pageTotal ?? ''} ',
-                        style: const TextStyle(
-                          color: AppColors.primaryColor,
-                          fontWeight: FontWeight.w500,
+                        Text(
+                          'Página ${viewModel.currentPage} de ${viewModel.pageTotal ?? ''} ',
+                          style: const TextStyle(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed:
-                            (viewModel.isLoading || viewModel.nextBtn == null)
-                            ? null
-                            : () => viewModel.nextPage(),
-                        icon: Icon(
-                          Icons.arrow_forward,
-                          color:
+                        IconButton(
+                          onPressed:
                               (viewModel.isLoading || viewModel.nextBtn == null)
-                              ? AppColors.colorBorder
-                              : AppColors.primaryColor,
+                              ? null
+                              : () => viewModel.nextPage(),
+                          icon: Icon(
+                            Icons.arrow_forward,
+                            color:
+                                (viewModel.isLoading ||
+                                    viewModel.nextBtn == null)
+                                ? AppColors.colorBorder
+                                : AppColors.primaryColor,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                  SizedBox(height: 10),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -256,7 +262,7 @@ class _HomePageState extends State<HomePage> {
 
         final double totalSpacing = (crossAxisCount - 1) * 12.0;
         final double itemWidth = (width - totalSpacing) / crossAxisCount;
-        
+
         final double itemHeight = itemWidth + 84.0;
         final double aspectRatio = itemWidth / itemHeight;
 

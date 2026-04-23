@@ -18,51 +18,13 @@ class _DrawerHomeState extends State<DrawerHome> {
   String selectedSpecies = 'Todas as espécies';
   String selectedGender = 'Todos os gêneros';
 
-  Widget _buildDropdown(
-    String currentValue,
-    List<String> options,
-    ValueChanged<String?> onChanged,
-  ) {
-    return Container(
-      width: double.maxFinite,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      decoration: BoxDecoration(
-        color: AppColors.bgColor,
-        border: Border.all(color: AppColors.colorBorder, width: 1),
-        borderRadius: AppColors.borderRadiusCard,
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          itemHeight: 50,
-          value: currentValue,
-          icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.bgColor),
-          iconSize: 24,
-          dropdownColor: AppColors.bgColor,
-          elevation: 4,
-          style: const TextStyle(
-            color: AppColors.primaryColor,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-          items: options
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-              .toList(),
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
       color: AppColors.bgAside,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
           children: [
             const Text(
               'Buscar',
@@ -141,7 +103,7 @@ class _DrawerHomeState extends State<DrawerHome> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.bgColor,
+                  backgroundColor: AppColors.colorBtnApply,
                   foregroundColor: AppColors.primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: AppColors.borderRadiusCard,
@@ -176,8 +138,9 @@ class _DrawerHomeState extends State<DrawerHome> {
               width: double.infinity,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.bgColor,
-                  side: const BorderSide(color: AppColors.bgColor),
+                  backgroundColor: AppColors.colorBtnClear,
+                  foregroundColor: AppColors.primaryColor,
+                  side: const BorderSide(color: Colors.transparent),
                   shape: RoundedRectangleBorder(
                     borderRadius: AppColors.borderRadiusCard,
                   ),
@@ -199,11 +162,47 @@ class _DrawerHomeState extends State<DrawerHome> {
                 },
                 child: const Text(
                   'Limpar Filtro',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown(
+    String currentValue,
+    List<String> options,
+    ValueChanged<String?> onChanged,
+  ) {
+    return Container(
+      width: double.maxFinite,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.bgColor,
+        border: Border.all(color: AppColors.colorBorder, width: 1),
+        borderRadius: AppColors.borderRadiusCard,
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          isExpanded: true,
+          itemHeight: 50,
+          value: currentValue,
+          icon: const Icon(Icons.keyboard_arrow_down, color: AppColors.bgColor),
+          iconSize: 24,
+          dropdownColor: AppColors.bgColor,
+          elevation: 4,
+          style: const TextStyle(
+            color: AppColors.primaryColor,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+          items: options
+              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+              .toList(),
+          onChanged: onChanged,
         ),
       ),
     );

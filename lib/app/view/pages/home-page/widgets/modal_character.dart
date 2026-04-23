@@ -128,7 +128,7 @@ class ModalCharacter {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.bgAside,
+                            backgroundColor: AppColors.colorBtnClear,
                             foregroundColor: AppColors.bgColor,
                             shape: RoundedRectangleBorder(
                               borderRadius: AppColors.borderRadiusCard,

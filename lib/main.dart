@@ -42,9 +42,7 @@ class MyApp extends StatelessWidget {
             side: const BorderSide(color: AppColors.colorBorder, width: 1),
           ),
         ),
-        drawerTheme: const DrawerThemeData(
-          backgroundColor: AppColors.bgAside,
-        ),
+        drawerTheme: const DrawerThemeData(backgroundColor: AppColors.bgAside),
         iconTheme: const IconThemeData(color: AppColors.primaryColor),
         textTheme: const TextTheme(
           bodyLarge: TextStyle(color: AppColors.primaryColor),

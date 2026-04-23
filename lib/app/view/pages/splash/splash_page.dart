@@ -160,7 +160,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
               ),
             ),
 
-            // Title text
             Transform.translate(
               offset: Offset(0, -(size.width * 0.12)),
               child: SlideTransition(
