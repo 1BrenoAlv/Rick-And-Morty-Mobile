@@ -13,7 +13,7 @@ class AppColors {
 
   static const Color colorBorder = Color(0x150D1321);
 
-  static const Color colorBtnApply = Color.fromARGB(255, 84, 178, 7);
+  static const Color colorBtnApply = Color.fromARGB(255, 8, 189, 189);
   static const Color colorBtnClear = Color.fromARGB(255, 182, 10, 1);
 
   static const double radiusCard = 15.0;

@@ -104,7 +104,7 @@ class _DrawerHomeState extends State<DrawerHome> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.colorBtnApply,
-                  foregroundColor: AppColors.primaryColor,
+                  foregroundColor: AppColors.bgColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: AppColors.borderRadiusCard,
                   ),
@@ -139,7 +139,7 @@ class _DrawerHomeState extends State<DrawerHome> {
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
                   backgroundColor: AppColors.colorBtnClear,
-                  foregroundColor: AppColors.primaryColor,
+                  foregroundColor: AppColors.bgColor,
                   side: const BorderSide(color: Colors.transparent),
                   shape: RoundedRectangleBorder(
                     borderRadius: AppColors.borderRadiusCard,

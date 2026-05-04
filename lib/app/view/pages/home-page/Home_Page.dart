@@ -85,102 +85,11 @@ class _HomePageState extends State<HomePage> {
               }
 
               if (viewModel.error != null) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.wifi_off_rounded,
-                          size: 80,
-                          color: AppColors.colorBorder,
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          viewModel.error!,
-                          style: const TextStyle(
-                            color: AppColors.primaryColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.bgAside,
-                            foregroundColor: AppColors.bgColor,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: AppColors.borderRadiusCard,
-                            ),
-                          ),
-                          onPressed: () => viewModel.fetchCharacters(),
-                          icon: const Icon(Icons.refresh),
-                          label: const Text(
-                            'Tentar Novamente',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+                return _buildErrorState(viewModel);
               }
-
-              if (viewModel.isFilterLoading && viewModel.characters.isEmpty) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.search_off_rounded,
-                          size: 80,
-                          color: AppColors.colorBorder,
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Nenhum personagem encontrado com esses filtros.',
-                          style: TextStyle(
-                            color: AppColors.primaryColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 24),
-                        OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.primaryColor,
-                            side: const BorderSide(
-                              color: AppColors.primaryColor,
-                              width: 2,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 12,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: AppColors.borderRadiusCard,
-                            ),
-                          ),
-                          onPressed: () => viewModel.clearFilter(),
-                          icon: const Icon(Icons.filter_alt_off),
-                          label: const Text(
-                            'Limpar Filtros',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
+              if (viewModel.errorType == ErrorType.notFound ||
+                  (viewModel.isFilterLoading && viewModel.characters.isEmpty)) {
+                return _buildEmptyState(viewModel);
               }
 
               return Column(
@@ -279,6 +188,188 @@ class _HomePageState extends State<HomePage> {
           },
         );
       },
+    );
+  }
+
+  /// Retorna o ícone para cada tipo de erro.
+  IconData _iconForErrorType(ErrorType? type) {
+    switch (type) {
+      case ErrorType.noInternet:
+        return Icons.wifi_off_rounded;
+      case ErrorType.timeout:
+        return Icons.timer_off_rounded;
+      case ErrorType.server:
+        return Icons.cloud_off_rounded;
+      case ErrorType.tooManyRequests:
+        return Icons.hourglass_empty_rounded;
+      case ErrorType.notFound:
+        return Icons.search_off_rounded;
+      case ErrorType.unknown:
+      case null:
+        return Icons.error_outline_rounded;
+    }
+  }
+
+  /// Tela de erro com ícone, mensagem e botão de tentar novamente.
+  Widget _buildErrorState(CharacterViewmodel viewModel) {
+    return Center(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.bgAside.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _iconForErrorType(viewModel.errorType),
+                  size: 72,
+                  color: AppColors.bgAside.withValues(alpha: 0.5),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                _errorTitle(viewModel.errorType),
+                style: const TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                viewModel.error!,
+                style: TextStyle(
+                  color: AppColors.primaryColor.withValues(alpha: 0.7),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.bgAside,
+                  foregroundColor: AppColors.bgColor,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppColors.borderRadiusCard,
+                  ),
+                  elevation: 2,
+                ),
+                onPressed: () => viewModel.fetchCharacters(),
+                icon: const Icon(Icons.refresh_rounded, size: 20),
+                label: const Text(
+                  'Tentar Novamente',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Título contextual para cada tipo de erro.
+  String _errorTitle(ErrorType? type) {
+    switch (type) {
+      case ErrorType.noInternet:
+        return 'Sem Conexão';
+      case ErrorType.timeout:
+        return 'Tempo Esgotado';
+      case ErrorType.server:
+        return 'Servidor Indisponível';
+      case ErrorType.tooManyRequests:
+        return 'Limite de Requisições';
+      case ErrorType.notFound:
+        return 'Não Encontrado';
+      case ErrorType.unknown:
+      case null:
+        return 'Algo deu errado';
+    }
+  }
+
+  /// Tela de resultado vazio (filtros sem match).
+  Widget _buildEmptyState(CharacterViewmodel viewModel) {
+    return Center(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.bgAside.withValues(alpha: 0.08),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.search_off_rounded,
+                  size: 72,
+                  color: AppColors.bgAside.withValues(alpha: 0.5),
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Nenhum Resultado',
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Nenhum personagem encontrado com os filtros selecionados.',
+                style: TextStyle(
+                  color: AppColors.primaryColor.withValues(alpha: 0.7),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryColor,
+                  side: const BorderSide(
+                    color: AppColors.primaryColor,
+                    width: 2,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: AppColors.borderRadiusCard,
+                  ),
+                ),
+                onPressed: () => viewModel.clearFilter(),
+                icon: const Icon(Icons.filter_alt_off_rounded, size: 20),
+                label: const Text(
+                  'Limpar Filtros',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

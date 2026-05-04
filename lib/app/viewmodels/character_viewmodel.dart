@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty_mobile/app/model/character.dart';
+import 'package:rick_and_morty_mobile/app/service/app_exceptions.dart';
 import 'package:rick_and_morty_mobile/app/service/character_service.dart';
+
+/// Tipos de erro para a UI exibir ícones e mensagens adequadas.
+enum ErrorType {
+  noInternet,
+  timeout,
+  notFound,
+  tooManyRequests,
+  server,
+  unknown,
+}
 
 class CharacterViewmodel extends ChangeNotifier {
   final CharacterService _service = CharacterService();
@@ -9,6 +20,7 @@ class CharacterViewmodel extends ChangeNotifier {
   bool isLoading = false;
   bool isFilterLoading = false;
   String? error;
+  ErrorType? errorType;
   int currentPage = 1;
   String? currentSearchName;
   String? currentStatus;
@@ -18,13 +30,18 @@ class CharacterViewmodel extends ChangeNotifier {
   String? nextBtn;
   String? prevBtn;
 
+  /// Número máximo de tentativas para erro 429 (rate limit).
+  static const int _maxRetries = 3;
+
   Future<void> fetchCharacters() async {
     isLoading = true;
     error = null;
+    errorType = null;
     notifyListeners();
+
     int attempt = 0;
-    bool success = false;
-    while (attempt < 3 && !success) {
+
+    while (attempt < _maxRetries) {
       try {
         final response = await _service.getCharacters(
           page: currentPage,
@@ -33,35 +50,67 @@ class CharacterViewmodel extends ChangeNotifier {
           speciesCharacter: currentSpecies,
           genderCharacter: currentGender,
         );
+
         characters = response.characters;
-        if (characters != []) {
-          nextBtn = response.nextPage;
-          prevBtn = response.prevPage;
-          pageTotal = response.totalPages;
-          success = true;
-          error = null;
-        }
+        nextBtn = response.nextPage;
+        prevBtn = response.prevPage;
+        pageTotal = response.totalPages;
         isFilterLoading = true;
-      } catch (e) {
-        debugPrint('Tentativa de carregar página: ${attempt + 1}');
+        error = null;
+        errorType = null;
+        break; // Sucesso — sai do loop.
+
+      } on TooManyRequestsException {
+        // Rate limit — tenta novamente após delay.
         attempt++;
-        if (e.toString().contains('429')) {
-          await Future.delayed(const Duration(milliseconds: 2000));
-        } else if (e.toString().contains('Erro de conexão')) {
-          error = 'Sem conexão com a internet. Verifique sua rede.';
-          break;
-        } else if (e.toString().contains('Erro na API')) {
-          error = 'Serviço temporariamente indisponível. Tente novamente mais tarde.';
-          break;
+        debugPrint('Rate limit atingido. Tentativa $attempt de $_maxRetries.');
+        if (attempt >= _maxRetries) {
+          _setError(
+            'Muitas requisições. Aguarde um momento e tente novamente.',
+            ErrorType.tooManyRequests,
+          );
         } else {
-          error = 'Falha ao carregar os dados. Tente novamente.';
-          break;
+          await Future.delayed(const Duration(milliseconds: 2000));
         }
-      } finally {
-        isLoading = false;
-        notifyListeners();
+      } on NotFoundException {
+        // 404 — nenhum resultado para os filtros atuais.
+        characters = [];
+        nextBtn = null;
+        prevBtn = null;
+        pageTotal = 0;
+        isFilterLoading = true;
+        error = null;
+        errorType = ErrorType.notFound;
+        break;
+      } on NoInternetException catch (e) {
+        _setError(e.message, ErrorType.noInternet);
+        break;
+      } on RequestTimeoutException catch (e) {
+        _setError(e.message, ErrorType.timeout);
+        break;
+      } on ServerException catch (e) {
+        _setError(e.message, ErrorType.server);
+        break;
+      } on AppException catch (e) {
+        _setError(e.message, ErrorType.unknown);
+        break;
+      } catch (e) {
+        _setError(
+          'Ocorreu um erro inesperado. Tente novamente.',
+          ErrorType.unknown,
+        );
+        debugPrint('Erro não tratado: $e');
+        break;
       }
     }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  void _setError(String message, ErrorType type) {
+    error = message;
+    errorType = type;
   }
 
   void filterAplly({

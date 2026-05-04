@@ -1,9 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:rick_and_morty_mobile/app/model/character.dart';
+import 'package:rick_and_morty_mobile/app/service/app_exceptions.dart';
 
 class CharacterService {
   final String _baseUrl = 'https://rickandmortyapi.com/api';
+
+  /// Timeout padrão para requisições HTTP.
+  static const Duration _requestTimeout = Duration(seconds: 15);
 
   Future<CharacterResponse> getCharacters({
     int page = 1,
@@ -25,43 +31,72 @@ class CharacterService {
     if (genderCharacter != null && genderCharacter.trim().isNotEmpty) {
       queryParams['gender'] = genderCharacter;
     }
+
+    final uri = Uri.parse('$_baseUrl/character').replace(
+      queryParameters: queryParams,
+    );
+
+    final http.Response response;
+
     try {
-      final response = await http.get(
-        Uri.parse('$_baseUrl/character').replace(queryParameters: queryParams),
+      response = await http.get(uri).timeout(_requestTimeout);
+    } on SocketException {
+      throw const NoInternetException();
+    } on TimeoutException {
+      throw const RequestTimeoutException();
+    } on HttpException {
+      throw const NoInternetException(
+        'Falha na comunicação com o servidor.',
       );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final int totalPages = data['info']['pages'];
-        final int totalCount = data['info']['count'];
-        final String? nextPage = data['info']['next'];
-        final String? prevPage = data['info']['prev'];
-        final List results = data['results'];
-        final characterList = results
-            .map((e) => Character.fromJson(e))
-            .toList();
-        return CharacterResponse(
-          characters: characterList,
-          totalPages: totalPages,
-          totalCount: totalCount,
-          nextPage: nextPage,
-          prevPage: prevPage,
+    } catch (_) {
+      throw const NoInternetException();
+    }
+
+    return _handleResponse(response);
+  }
+
+  /// Processa a resposta HTTP e retorna [CharacterResponse] ou lança
+  /// a exceção tipada correspondente ao código de status.
+  CharacterResponse _handleResponse(http.Response response) {
+    switch (response.statusCode) {
+      case 200:
+        return _parseSuccess(response.body);
+      case 404:
+        throw const NotFoundException();
+      case 429:
+        throw const TooManyRequestsException();
+      default:
+        if (response.statusCode >= 500) {
+          throw ServerException(
+            'Serviço temporariamente indisponível. Tente mais tarde.',
+            response.statusCode,
+          );
+        }
+        throw UnknownApiException(
+          'Erro inesperado (código ${response.statusCode}).',
+          response.statusCode,
         );
-      } else if (response.statusCode == 404) {
-        return CharacterResponse(
-          characters: [],
-          totalPages: 0,
-          totalCount: 0,
-          nextPage: null,
-          prevPage: null,
-        );
-      } else {
-        throw Exception('Erro na API. Código: ${response.statusCode}');
-      }
+    }
+  }
+
+  /// Faz o parse do JSON de sucesso (status 200).
+  CharacterResponse _parseSuccess(String body) {
+    try {
+      final data = jsonDecode(body) as Map<String, dynamic>;
+      final info = data['info'] as Map<String, dynamic>;
+      final List results = data['results'] as List;
+
+      return CharacterResponse(
+        characters: results.map((e) => Character.fromJson(e)).toList(),
+        totalPages: info['pages'] as int,
+        totalCount: info['count'] as int,
+        nextPage: info['next'] as String?,
+        prevPage: info['prev'] as String?,
+      );
     } catch (e) {
-      if (e.toString().contains('Erro na API')) {
-        rethrow;
-      }
-      throw Exception('Erro de conexão: $e');
+      throw UnknownApiException(
+        'Erro ao processar os dados recebidos.',
+      );
     }
   }
 }
